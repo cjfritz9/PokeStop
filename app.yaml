@@ -1,0 +1,8 @@
+runtime: nodejs16
+
+handlers:
+  - url: /.*
+    script: auto
+
+env_variables:
+  JWT_SECRET: 'sssh'

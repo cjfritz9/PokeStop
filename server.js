@@ -1,11 +1,8 @@
 require("dotenv").config();
 const client = require("./db/client");
 const cors = require("cors");
-const path = require("path");
 const http = require("http");
 const chalk = require('chalk');
-
-const favicon = require("serve-favicon");
 
 const express = require("express");
 const app = express();
@@ -20,7 +17,6 @@ app.use(
     origin: "*",
   })
 );
-app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 app.use((req, res, next) => {
   console.log(chalk.whiteBright("<___Body Logger Start___>"));
