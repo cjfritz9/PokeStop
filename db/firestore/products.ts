@@ -1,34 +1,34 @@
-const client = require("./client");
+//@ts-ignore
+const { db } = require('./db');
 
 const getAllProducts = async () => {
-  console.log("Inside db/getAllProducts");
+  console.log('Inside db/getAllProducts');
   try {
-    const { rows } = await client.query(`
-                SELECT * FROM products
-                WHERE isactive=true;
-            `);
+    const collectionRef: any = await db.collection('products').get();
 
-    return rows;
+    console.log('coll docs', collectionRef.docs);
+    return collectionRef.docs.map((doc: any) => {
+      return { id: doc.id, ...doc.data() };
+    });
   } catch (error) {
     console.error(error);
     throw error;
   }
 };
 
-const getProductById = async(productId) => {
+const getProductById = async (productId: any) => {
+  console.log(productId);
   try {
-    const { rows: [product] } = await client.query(`
-      SELECT * FROM products
-      WHERE id = ${productId}
-        AND isactive = true;
-    `)
-    console.log("PRODUCT", product)
-    return product;
+    const docRef: any = await db.collection('products').doc(productId).get();
+    return {
+      id: productId,
+      ...docRef.data()
+    };
   } catch (error) {
     console.error(error);
     throw error;
   }
-} 
+};
 
 module.exports = {
   getAllProducts,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import BASE_URL from "../api";
 import '../stylesheets/Details.css';
-const BASE_URL = "http://localhost:4000/api";
 
 let purchaseItems = [];
 const Details = ({

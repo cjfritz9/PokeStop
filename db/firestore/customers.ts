@@ -1,5 +1,7 @@
-const client = require("./client");
-const bcrypt = require("bcrypt");
+// const client = require("./client");
+const bcrypt = require('bcrypt');
+//@ts-ignore
+const { db } = require('./db.js');
 
 const createCustomer = async ({
   username,
@@ -8,97 +10,127 @@ const createCustomer = async ({
   lastname,
   email,
   address,
-  isadmin = false,
-}) => {
+  isadmin = false
+}: any) => {
   try {
     const SALT_COUNT = 10;
     const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
-
-    const {
-      rows: [customer],
-    } = await client.query(
-      `
-            INSERT INTO customers (username, password, firstname, lastname, email, address, isadmin)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            ON CONFLICT (username, email) DO NOTHING
-            RETURNING id, username;
-        `,
-      [username, hashedPassword, firstname, lastname, email, address, isadmin]
+    console.log(
+      username,
+      firstname,
+      lastname,
+      email,
+      hashedPassword,
+      address,
+      isadmin
     );
 
-    return customer;
+    const docRef: any = await db.collection('customers').add({
+      username,
+      hashedPassword,
+      firstname,
+      lastname,
+      email,
+      address,
+      isadmin
+    });
+    if (!docRef.id) return;
+    const addedCustomer = (
+      await db.collection('customers').doc(docRef.id).get()
+    ).data();
+
+    return {
+      id: docRef.id,
+      ...addedCustomer
+    };
   } catch (error) {
     console.error(error);
     throw error;
   }
 };
 
-const updateCustomer = async ({ id, ...fields }) => {
-  console.log("FIELDS", fields);
+const updateCustomer = async ({ id, ...fields }: any) => {
+  console.log('FIELDS', fields);
   if (fields.password) {
     const SALT_COUNT = 10;
     fields.password = await bcrypt.hash(fields.password, SALT_COUNT);
   }
-  const columns = Object.keys(fields)
-    .map((key, idx) => `"${key}"=$${idx + 1}`)
-    .join(", ");
-
-  if (columns.length === 0) {
-    return;
-  }
 
   try {
-    const {
-      rows: [customer],
-    } = await client.query(
-      `
-            UPDATE customers
-            SET ${columns}
-            WHERE id = ${id}
-            RETURNING *;
-        `,
-      Object.values(fields)
-    );
-
-    return customer;
+    // const {
+    //   rows: [customer]
+    // } = await client.query(
+    //   `
+    //         UPDATE customers
+    //         SET ${columns}
+    //         WHERE id = ${id}
+    //         RETURNING *;
+    //     `,
+    //   Object.values(fields)
+    // );
+    // return customer;
   } catch (error) {
     console.error(error);
     throw error;
   }
 };
 
-const getCustomer = async ({ username, password }) => {
+const getCustomer = async ({ username, password }: any): Promise<any> => {
   try {
-    const customer = await getCustomerByUsername(username);
+    const customer: any = await getCustomerByUsername(username);
+    console.log('get customer after register', customer);
     if (!customer) {
       return;
     }
 
     const hashedPassword = customer.password;
+    console.log('created customers PWs', password, hashedPassword);
     const passwordsMatch = await bcrypt.compare(password, hashedPassword);
     if (passwordsMatch) {
-      const validCustomer = {
+      return {
         id: customer.id,
         username: customer.username,
-        admin: customer.isadmin,
+        admin: customer.isadmin
       };
-      return validCustomer;
     }
   } catch (error) {
     console.error(error);
+  }
+};
+
+const getCustomerById = async (customerId: string) => {
+  console.log(customerId);
+
+  try {
+    // const {
+    //   rows: [customer]
+    // } = await client.query(`
+    //         SELECT id, username
+    //         FROM customers
+    //         WHERE id = ${customerId};
+    //     `);
+    // return customer;
+  } catch (error) {
+    console.error(error);
     throw error;
   }
 };
 
-const getCustomerById = async (customerId) => {
+const getCustomerByUsername = async (username: string) => {
+  console.log(username);
   try {
-    const {
-      rows: [customer],
-    } = await client.query(`
-            SELECT id, username
-            FROM customers
-            WHERE id = ${customerId};
-        `);
+    const docRef: any = await db
+      .collection('customers')
+      .where('username', '==', username)
+      .get();
+    if (docRef.empty) return;
+    let customer: any = {};
+    docRef.forEach((doc: any) => {
+      customer = {
+        id: doc.id,
+        ...doc.data()
+      };
+    });
 
     return customer;
   } catch (error) {
@@ -107,39 +139,20 @@ const getCustomerById = async (customerId) => {
   }
 };
 
-const getCustomerByUsername = async (username) => {
+const getCustomerByEmail = async (email: string) => {
+  console.log(email);
   try {
-    const {
-      rows: [customer],
-    } = await client.query(
-      `
-            SELECT *
-            FROM customers
-            WHERE username = '${username}';
-        `
-    );
-
-    return customer;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
-
-const getCustomerByEmail = async (email) => {
-  try {
-    const {
-      rows: [customer],
-    } = await client.query(
-      `
-            SELECT *
-            FROM customers
-            WHERE email = $1;
-        `,
-      [email]
-    );
-
-    return customer;
+    // const {
+    //   rows: [customer]
+    // } = await client.query(
+    //   `
+    //         SELECT *
+    //         FROM customers
+    //         WHERE email = $1;
+    //     `,
+    //   [email]
+    // );
+    // return customer;
   } catch (error) {
     console.error(error);
     throw error;
@@ -152,5 +165,5 @@ module.exports = {
   getCustomer,
   getCustomerById,
   getCustomerByUsername,
-  getCustomerByEmail,
+  getCustomerByEmail
 };

@@ -1,7 +1,5 @@
 require("dotenv").config();
-const client = require("./db/client");
 const cors = require("cors");
-const http = require("http");
 const chalk = require('chalk');
 
 const express = require("express");
@@ -45,11 +43,9 @@ app.get('*', async (req, res) => {
   });
 });
 
-client.connect();
 const PORT = process.env["PORT"] ?? 4000;
-const server = http.createServer(app);
 
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(
     chalk.blueBright("Server is listening on"),
     chalk.bold.yellowBright('PORT :', PORT),

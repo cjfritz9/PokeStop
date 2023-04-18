@@ -1,5 +1,5 @@
 module.exports = {
-  ...require("./client"),
+  ...require("./db"),
   ...require("./customers"),
   ...require("./products"),
   ...require("./admin"),

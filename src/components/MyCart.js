@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-const BASE_URL = "http://localhost:4000/api";
+import BASE_URL from "../api";
 import "../stylesheets/MyCart.css";
-const path = "http://localhost:4000/api";
 
 const MyCart = ({
   loggedIn,
@@ -111,7 +110,7 @@ const MyCart = ({
       console.log(priceTotal)
         if (loggedIn) {
             try {
-                const response = await fetch(`${path}/cart_products`, {
+                const response = await fetch(`${BASE_URL}/cart_products`, {
                     method: "DELETE",
                     headers: {
                         'Content-Type': 'application/json',
@@ -155,7 +154,7 @@ const MyCart = ({
         setError("Nice Try")
       } else {
       try {
-        const response = await fetch(`${path}/products/${id}`);
+        const response = await fetch(`${BASE_URL}/products/${id}`);
         const { data } = await response.json();
         console.log("DATA", data)
 
@@ -167,7 +166,7 @@ const MyCart = ({
             await getCurrentCart()
           } else if(loggedIn) {
             console.log("ELLO?")
-            const response = await fetch(`${path}/cart_products`, {
+            const response = await fetch(`${BASE_URL}/cart_products`, {
               method: 'PATCH',
               headers: {
                   'Content-Type': 'application/json',

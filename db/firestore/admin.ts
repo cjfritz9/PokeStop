@@ -1,9 +1,7 @@
-import { DocumentData } from 'firebase-admin/firestore';
-import db from './db.js';
 
 const adminCheckById = async (id: string) => {
   try {
-    const userDoc: DocumentData = await db
+    const userDoc: any = await db
       .collection('customers')
       .doc(id)
       .get();
@@ -80,7 +78,7 @@ const adminGetProductIdByName = async (name: string) => {
   }
 };
 
-const adminUpdateProductById = async ({ id, ...fields }) => {
+const adminUpdateProductById = async ({ id, ...fields }: any) => {
   const docFields = Object.keys(fields)
     .map((key, idx) => `"${key}"=$${idx + 1}`)
     .join(', ');
@@ -118,7 +116,7 @@ const adminSetActiveProductById = async (id: string, bool: boolean) => {
 
 const adminGetCustomerByUsername = async (username: string) => {
   try {
-    const docRef = await db
+    const docRef: any = await db
       .collection('customers')
       .where('username', '==', username)
       .get();

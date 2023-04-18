@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import BASE_URL from "../api";
 import '../stylesheets/Checkout.css';
 
 const Checkout = ({
@@ -8,8 +8,6 @@ const Checkout = ({
     
     let subTotal = 0;
     let cartItem = [];
-
-    const path = "http://localhost:4000/api";
     const navigate = useNavigate();
 
     const handleSubmit = (event) => {
@@ -38,7 +36,7 @@ const Checkout = ({
       //We may need to add more items to change but for right now
       //it's probably just inventory count.
       console.log("Product is ", product);
-      const response = await fetch(`${path}/products`, {
+      const response = await fetch(`${BASE_URL}/products`, {
         method: "PATCH",
         headers: {
               'Content-Type': 'application/json',
@@ -72,7 +70,7 @@ const Checkout = ({
       //Close the order from carts -- but only for a registered customer
       //Otherwise, there won't be an associated cart.
       if (token) {
-        response = await fetch(`${path}/carts`, {
+        response = await fetch(`${BASE_URL}/carts`, {
           method: "PATCH",
           headers: {
                 'Content-Type': 'application/json',
@@ -85,7 +83,7 @@ const Checkout = ({
           }
 
           //Now we need to create a new open Cart for this customer
-          response = await fetch(`${path}/carts`, {
+          response = await fetch(`${BASE_URL}/carts`, {
             method: "POST",
             headers: {
                   'Content-Type': 'application/json',

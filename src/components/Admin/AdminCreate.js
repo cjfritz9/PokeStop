@@ -1,7 +1,6 @@
 import { useState } from "react";
+import BASE_URL from "../../api";
 import "../../stylesheets/AdminCreate.css";
-
-const BASE_URL = "http://localhost:4000/api";
 
 const AdminCreate = () => {
   const [newProductName, setNewProductName] = useState("");

@@ -1,7 +1,5 @@
 const client = require("./client");
 
-const {} = require("../db");
-
 const adminCheckById = async (id) => {
   try {
     const {

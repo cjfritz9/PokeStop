@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
+import BASE_URL from "../api";
 import "../stylesheets/EditProfile.css";
-
-const BASE_URL = "http://localhost:4000/api";
 
 const EditProfile = (props) => {
   const { password, setPassword } = props;

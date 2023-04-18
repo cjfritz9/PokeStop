@@ -1,7 +1,6 @@
 import { useState } from "react";
+import BASE_URL from "../../api";
 import "../../stylesheets/AdminCustomer.css";
-
-const BASE_URL = "http://localhost:4000/api";
 
 const AdminCustomer = () => {
   const [customerUsername, setCustomerUsername] = useState("");

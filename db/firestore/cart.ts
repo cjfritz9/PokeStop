@@ -1,49 +1,52 @@
-const client = require("./client");
+// const client = require("./client");
 
-const createCart = async(customerid) => {
+const createCart = async (customerid: string) => {
+  console.log(customerid)
   try {
     
-    const { rows: [cart] } = await client.query(
-      `
-            INSERT INTO carts (customerid)
-            VALUES ($1)
-            RETURNING *;
-        `,
-      [customerid]
-    );
+    // const { rows: [cart] } = await client.query(
+    //   `
+    //         INSERT INTO carts (customerid)
+    //         VALUES ($1)
+    //         RETURNING *;
+    //     `,
+    //   [customerid]
+    // );
 
-    return cart;
+    // return cart;
   } catch (error) {
     console.error(error);
     throw error;
   }
 };
 
-const getCartIdbyCustomerId = async(customerId) => {
+const getCartIdbyCustomerId = async (customerId: string) => {
+  console.log(customerId)
   try {
-    const { rows: [id] } = await client.query(`
-      SELECT id
-      FROM carts
-      WHERE carts.customerid = ${customerId}
-    `)
+    // const { rows: [id] } = await client.query(`
+    //   SELECT id
+    //   FROM carts
+    //   WHERE carts.customerid = ${customerId}
+    // `)
 
-    return id;
+    // return id;
   } catch (error) {
     console.error(error);
     throw error;
   }
 }
 
-const closeCart = async(cartId) => {
+const closeCart = async (cartId: string) => {
+  console.log(cartId)
 
   try {
-    const { rows: [cart] } = await client.query(`
-      UPDATE carts 
-      SET isopen = false
-      WHERE id = ${cartId}
-    `)
+    // const { rows: [cart] } = await client.query(`
+    //   UPDATE carts 
+    //   SET isopen = false
+    //   WHERE id = ${cartId}
+    // `)
 
-    return cart;
+    // return cart;
   } catch (error) {
     console.error(error);
     throw error;
