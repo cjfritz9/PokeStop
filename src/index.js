@@ -41,8 +41,6 @@ const App = () => {
     }
   }, []);
 
-  console.log("LOGGED IN WHOLE", loggedIn);
-
   return (
     <div>
       <Header

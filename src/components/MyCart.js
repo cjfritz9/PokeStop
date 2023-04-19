@@ -13,14 +13,11 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
     currency: 'USD'
   });
   const token = localStorage.getItem('token');
-  console.log('logged', loggedIn);
-  console.log('cart', cart);
 
   const getCurrentCart = async () => {
     const sessionCart = localStorage.getItem('cartItems');
     const cartArr = sessionCart ? JSON.parse(sessionCart) : null;
     // const cartid = loggedIn ? await getCartId() : null;
-    console.log('sesh cart', sessionCart);
     // if (!loggedIn && sessionCart) {
     setCart(cartArr);
     // cartTotal();
@@ -44,7 +41,6 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
     // } else {
     //   setCart([]);
     // }
-    console.log('total', priceTotal);
   };
 
   const getCartId = async () => {
@@ -56,7 +52,6 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
         }
       });
       const result = await response.json();
-      console.log('CART ID', result);
       return result;
     } catch (error) {
       console.error(error);
@@ -64,8 +59,6 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
   };
 
   const fetchCustomerCart = async () => {
-    console.log('base url', BASE_URL);
-    console.log('token', token);
     try {
       const response = await fetch(`${BASE_URL}/cart_products/`, {
         headers: {
@@ -74,7 +67,6 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
         }
       });
       const result = await response.json();
-      console.log('FETCH CART', result);
       return result;
     } catch (error) {
       console.error(error);
@@ -102,7 +94,6 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
         })
       });
       const result = await response.json();
-      console.log('RESULT', result);
     } catch (error) {
       console.error(error);
       setCart([]);
@@ -111,7 +102,6 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
 
   const handleDelete = async (id, cartItemPrice) => {
     setPriceTotal(priceTotal - cartItemPrice);
-    console.log(priceTotal);
     // if (loggedIn) {
     //   try {
     //     const response = await fetch(`${BASE_URL}/cart_products`, {
@@ -131,11 +121,8 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
     //     console.error(error);
     //   }
     // } else {
-    console.log('CART? Del', cart);
     const storageCart = JSON.parse(localStorage.getItem('cartItems'));
-    console.log('storage cart', storageCart);
     storageCart.map((item, i) => {
-      console.log('IDs', item.id, id);
       item.id === id ? storageCart.splice(i, 1) : null;
     });
     if (storageCart.length) {
@@ -143,16 +130,12 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
     } else {
       localStorage.removeItem('cartItems');
     }
-    console.log('AFTER SPLICE', storageCart);
     getCurrentCart();
     // }
   };
 
   const handleQuantity = async (id, priceDifference) => {
     const currentTotal = priceTotal;
-    console.log('ID', id);
-
-    console.log('DIFF, TTL', priceDifference, priceTotal);
 
     if (priceDifference + priceTotal < 0) {
       setError('Nice Try');
@@ -160,16 +143,13 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
       try {
         const response = await fetch(`${BASE_URL}/products/${id}`);
         const { data } = await response.json();
-        console.log('DATA', data);
 
         if (data) {
           if (updateQuantity > data.inventorycount) {
             setError('Quantity exceeds Inventory');
-            console.log('ERROR', error);
             setPriceTotal(currentTotal);
             await getCurrentCart();
           } else if (loggedIn) {
-            console.log('ELLO?');
             const response = await fetch(`${BASE_URL}/cart_products`, {
               method: 'PATCH',
               headers: {
@@ -181,22 +161,16 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
                 quantity: updateQuantity
               })
             });
-            console.log('RESPONSE', response);
             const result = await response.json();
-            console.log('RESULT', result);
             // setError("")
             setPriceTotal(priceTotal + priceDifference);
             await getCurrentCart();
           } else {
-            console.log('CART? Del', cart);
             const storageCart = JSON.parse(localStorage.getItem('cartItems'));
-            console.log('storage cart', storageCart);
             storageCart.map((item, i) => {
-              console.log('IDs', item.id, id);
               item.id === id ? (item.quantity = updateQuantity) : null;
             });
             localStorage.setItem('cartItems', JSON.stringify(storageCart));
-            console.log('QTY', storageCart);
             // setError("")
             setPriceTotal(priceTotal + priceDifference);
             getCurrentCart();
@@ -230,8 +204,6 @@ const MyCart = ({ loggedIn, priceTotal, setPriceTotal }) => {
         {error ? <div className='error'>{error}</div> : null}
         {cart && cart.length ? (
           cart.map((singleItem, i) => {
-            console.log('singleitem', singleItem);
-            console.log('TOTAL', priceTotal);
             return (
               <div className='cart-item' key={i}>
                 <div id='img-name'>

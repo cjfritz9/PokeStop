@@ -57,7 +57,6 @@ const AdminUpdateProduct = () => {
       }
       setError(result.error);
       setErrorMessage(result.message);
-      console.log("RESULT", result);
     } catch (err) {
       console.error(err);
     }

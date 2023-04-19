@@ -47,7 +47,6 @@ const EditProfile = (props) => {
       setError(result.error);
       setErrorMessage(result.message);
       setSuccess(result.success);
-      console.log("UPDATE PROFILE RESULTS", result);
     } catch (err) {
       console.error(err);
     }
@@ -63,7 +62,6 @@ const EditProfile = (props) => {
       });
       const result = await response.json();
       setProfile(result);
-      console.log("PROFILE RESULT", result);
     } catch (err) {
       console.error(err);
     }
@@ -71,7 +69,6 @@ const EditProfile = (props) => {
 
   useEffect(() => {
     getMyProfile();
-    console.log("PASSWORD", password);
   }, []);
 
   const passwordChange = async () => {

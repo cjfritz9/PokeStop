@@ -27,15 +27,12 @@ const AdminCustomer = () => {
         }
       );
       const result = await response.json();
-      console.log("RESULT", result);
-      console.log("RESULT", result.success);
       setProfile(result.viewCustomer);
       setSuccess(result.success);
       setError(result.error);
       setErrorMessage(result.message);
       setIsadmin(result.viewCustomer.isadmin);
       setCustomerId(result.viewCustomer.id);
-      console.log("result.viewCustomer.id", result.viewCustomer.id);
     } catch (err) {
       console.error(err);
     }
@@ -56,7 +53,6 @@ const AdminCustomer = () => {
       });
       const result = await response.json();
       setAdminSuccess(result.success);
-      console.log("ADMIN PERMISSION RESULT", result);
     } catch (err) {
       console.error(err);
     }
@@ -76,7 +72,6 @@ const AdminCustomer = () => {
       });
       const result = await response.json();
       setDeleteSuccess(result.success);
-      console.log("RESULT", result);
     } catch (err) {
       console.error(err);
     }

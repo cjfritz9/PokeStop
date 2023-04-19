@@ -23,11 +23,9 @@ const Checkout = ({
         })
       }
     }
-    console.log('Subtotal', subTotal)
     
     const Tax = priceTotal * .0825;
     const Total = priceTotal + Tax;
-    console.log("Bill", subTotal, Tax, Total);
 
 
     const updateInventory = async (product) => {
@@ -35,7 +33,6 @@ const Checkout = ({
       //Call backend to decrease the inventory for product ID
       //We may need to add more items to change but for right now
       //it's probably just inventory count.
-      console.log("Product is ", product);
       const response = await fetch(`${BASE_URL}/products`, {
         method: "PATCH",
         headers: {
@@ -49,7 +46,6 @@ const Checkout = ({
               })
         });
         const data = await response.json();
-        console.log('data', data);
     }
 
 
@@ -78,9 +74,6 @@ const Checkout = ({
                 }
           });
           data = await response.json();
-          if (data.success) {
-            console.log('data', data);
-          }
 
           //Now we need to create a new open Cart for this customer
           response = await fetch(`${BASE_URL}/carts`, {
@@ -92,7 +85,6 @@ const Checkout = ({
             });
             data = await response.json();
             if (data.success) {
-              console.log('data', data);
               navigate("/Thanks");
             } else {
               console.log("Error creating new Open Cart", data.message);

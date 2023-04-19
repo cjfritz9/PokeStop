@@ -19,7 +19,6 @@ const PurchaseHistory = () => {
       });
       const result = await response.json();
       setPurchases(result);
-      console.log("PURCHASE HISTORY RESULT", result);
     } catch (err) {
       console.error(err);
     }
@@ -44,7 +43,6 @@ const PurchaseHistory = () => {
           <div>No Purchase History</div>
         ) : (
           purchases.map((purchase, i) => {
-            console.log("PURCHASE", purchase);
             return (
               <div className="purchase-container" key={i}>
                 <div>

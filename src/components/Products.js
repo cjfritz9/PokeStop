@@ -26,7 +26,6 @@ const Products = (props) => {
       const response = await fetch(`${BASE_URL}/products`);
       const result = await response.json();
       if (result.success) {
-        console.log('SUCCESS! RESULT:', result);
         setAllProducts(result.data);
       }
     } catch (err) {
@@ -44,7 +43,6 @@ const Products = (props) => {
       <h1 id='products-heading'>Cards For Sale</h1>
       <div id='products-wrapper'>
         {allProducts.map((product, i) => {
-          console.log('PRODUCT', product);
           return (
             <div className='product-container' key={i}>
               <img

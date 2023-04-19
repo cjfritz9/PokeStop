@@ -14,7 +14,6 @@ const Details = ({ setPriceTotal, priceTotal, token, setToken, loggedIn }) => {
   let checkLocalStorage = [];
 
   checkLocalStorage = localStorage.getItem('cartItems');
-  console.log('checkLocalStorage is', checkLocalStorage);
   if (
     checkLocalStorage === null ||
     checkLocalStorage === [] ||
@@ -42,7 +41,6 @@ const Details = ({ setPriceTotal, priceTotal, token, setToken, loggedIn }) => {
   }, []);
 
   useEffect(() => {
-    console.log('Inside useEffect for product', product.id);
     if (product.inventorycount === 0) {
       document.getElementById('addcard').disabled = true;
     }
@@ -58,14 +56,11 @@ const Details = ({ setPriceTotal, priceTotal, token, setToken, loggedIn }) => {
           }
         });
         const customerCart = await response.json();
-        console.log('CART', customerCart);
         if (customerCart && customerCart.length) {
           Promise.all(
             customerCart.map((existingProduct) => {
-              console.log('IDs', existingProduct.productId, productId);
               if (existingProduct.id == productId) {
                 setError('Already in your cart');
-                console.log('ERROR:', error);
                 // return error;
               }
             })
@@ -118,7 +113,6 @@ const Details = ({ setPriceTotal, priceTotal, token, setToken, loggedIn }) => {
       localStorage.setItem('cartItems', JSON.stringify([...purchaseItems]));
 
       if (loggedIn) {
-        console.log('HERE?', loggedIn, token);
         const response = await fetch(`${BASE_URL}/cart_products`, {
           method: 'POST',
           headers: {
@@ -130,12 +124,10 @@ const Details = ({ setPriceTotal, priceTotal, token, setToken, loggedIn }) => {
             quantity: quantity
           })
         });
-        console.log('response', response);
         const data = await response.json();
         if (!data.success) {
           alert('Error adding purchase item to cart');
         } else {
-          console.log('data', data);
           alert('Item successfully added to your cart');
         }
       } else {

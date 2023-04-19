@@ -61,7 +61,6 @@ adminRouter.patch('/editproduct', requireAdmin, async (req, res, next) => {
     inventorycount,
     isactive
   } = req.body);
-  console.log('ADMIN INPUTS', adminInputs);
 
   Object.keys(adminInputs).forEach((key) => {
     if (adminInputs[key] === '') {

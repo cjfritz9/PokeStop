@@ -41,7 +41,6 @@ const Register = ({ loggedIn, setLoggedIn, setToken }) => {
         }),
       });
       const result = await response.json();
-      console.log("result", result);
       setError(result.error);
       setErrorMessage(result.message);
       result.token ? localStorage.setItem("token", result.token) : null;
@@ -50,8 +49,6 @@ const Register = ({ loggedIn, setLoggedIn, setToken }) => {
         : null;
       setLoggedIn(true);
       setToken(result.token);
-      console.log("resulterror", result.error);
-      console.log("resultmessage", result.message);
     } catch (err) {
       console.error(err);
       setLoggedIn(false);
