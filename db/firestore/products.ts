@@ -1,5 +1,5 @@
 //@ts-ignore
-const { db } = require('./db');
+const { db } = require('./db.js');
 
 const getAllProducts = async () => {
   console.log('Inside db/getAllProducts');
@@ -15,6 +15,17 @@ const getAllProducts = async () => {
     throw error;
   }
 };
+
+// const seedProducts = async (products: any[]) => {
+//   try {
+//     products.forEach(async (card) => {
+//       const docRef = await db.collection('products').add(card);
+//       console.log('newly created product doc: ', docRef.id, docRef);
+//     });
+//   } catch (err) {
+//     return console.error(err);
+//   }
+// };
 
 const getProductById = async (productId: any) => {
   console.log(productId);
@@ -32,5 +43,6 @@ const getProductById = async (productId: any) => {
 
 module.exports = {
   getAllProducts,
-  getProductById
+  getProductById,
+  seedProducts
 };

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 //@ts-ignore
-const { db } = require('./db');
+const { db } = require('./db.js');
 const getAllProducts = () => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Inside db/getAllProducts');
     try {
@@ -24,6 +24,16 @@ const getAllProducts = () => __awaiter(void 0, void 0, void 0, function* () {
         throw error;
     }
 });
+// const seedProducts = async (products: any[]) => {
+//   try {
+//     products.forEach(async (card) => {
+//       const docRef = await db.collection('products').add(card);
+//       console.log('newly created product doc: ', docRef.id, docRef);
+//     });
+//   } catch (err) {
+//     return console.error(err);
+//   }
+// };
 const getProductById = (productId) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(productId);
     try {
@@ -37,5 +47,6 @@ const getProductById = (productId) => __awaiter(void 0, void 0, void 0, function
 });
 module.exports = {
     getAllProducts,
-    getProductById
+    getProductById,
+    seedProducts
 };

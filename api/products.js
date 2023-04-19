@@ -2,6 +2,7 @@ const express = require('express');
 const productsRouter = express.Router();
 
 const { getAllProducts, getProductById } = require('../dist/firestore');
+const { seedProducts } = require('../dist/firestore/products.js');
 
 //Get all the products
 productsRouter.get('/', async (req, res, next) => {
@@ -58,5 +59,16 @@ productsRouter.patch('/', async (req, res, next) => {
     next({ error, message });
   }
 });
+
+// productsRouter.post('/', async (req, res, next) => {
+//   const { cards } = req.body;
+//   try {
+//     const result = await seedProducts(cards);
+//     console.log('seed result from db: ', result);
+//     res.send({ result });
+//   } catch ({ error, message }) {
+//     next({ error, message });
+//   }
+// });
 
 module.exports = productsRouter;

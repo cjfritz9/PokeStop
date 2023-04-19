@@ -19,6 +19,8 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+//@ts-ignore
+const { db } = require('./db.js');
 const adminCheckById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userDoc = yield db

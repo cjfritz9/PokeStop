@@ -1,3 +1,5 @@
+//@ts-ignore
+const { db } = require('./db.js')
 
 const adminCheckById = async (id: string) => {
   try {
