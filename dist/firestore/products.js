@@ -11,8 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 //@ts-ignore
 const { db } = require('./db.js');
 const getAllProducts = () => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('Inside db/getAllProducts');
     try {
         const collectionRef = yield db.collection('products').get();
+        console.log('coll docs', collectionRef.docs);
         return collectionRef.docs.map((doc) => {
             return Object.assign({ id: doc.id }, doc.data());
         });
@@ -45,6 +47,5 @@ const getProductById = (productId) => __awaiter(void 0, void 0, void 0, function
 });
 module.exports = {
     getAllProducts,
-    getProductById,
-    seedProducts
+    getProductById
 };
