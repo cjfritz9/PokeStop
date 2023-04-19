@@ -1,19 +1,16 @@
 // const client = require("./client");
+//@ts-ignore
+const { db } = require('./db.js');
 
 const createCart = async (customerid: string) => {
-  console.log(customerid)
+  console.log(customerid);
   try {
-    
-    // const { rows: [cart] } = await client.query(
-    //   `
-    //         INSERT INTO carts (customerid)
-    //         VALUES ($1)
-    //         RETURNING *;
-    //     `,
-    //   [customerid]
-    // );
-
-    // return cart;
+    const docRef = await db.collection('carts').add({
+      customerid,
+      isopen: true
+    });
+    if (!docRef.id) return;
+    return docRef.id;
   } catch (error) {
     console.error(error);
     throw error;
@@ -21,41 +18,41 @@ const createCart = async (customerid: string) => {
 };
 
 const getCartIdbyCustomerId = async (customerId: string) => {
-  console.log(customerId)
+  console.log(customerId);
   try {
-    // const { rows: [id] } = await client.query(`
-    //   SELECT id
-    //   FROM carts
-    //   WHERE carts.customerid = ${customerId}
-    // `)
-
-    // return id;
+    const docsSnap = await db
+      .collection('carts')
+      .where('customerid', '==', customerId)
+      .get();
+    let cartId = '';
+    docsSnap.forEach((doc: any) => {
+      cartId = doc.id;
+    });
+    return cartId;
   } catch (error) {
     console.error(error);
     throw error;
   }
-}
+};
 
 const closeCart = async (cartId: string) => {
-  console.log(cartId)
-
   try {
-    // const { rows: [cart] } = await client.query(`
-    //   UPDATE carts 
-    //   SET isopen = false
-    //   WHERE id = ${cartId}
-    // `)
-
-    // return cart;
+    const docRef = await db.collection('carts').doc(cartId).update({
+      isopen: false
+    });
+    if (docRef.empty) return;
+    return {
+      success: true,
+      id: docRef.id
+    };
   } catch (error) {
     console.error(error);
     throw error;
   }
-}
-
+};
 
 module.exports = {
-    createCart,
-    getCartIdbyCustomerId,
-    closeCart,
+  createCart,
+  getCartIdbyCustomerId,
+  closeCart
 };

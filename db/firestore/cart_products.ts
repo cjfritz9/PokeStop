@@ -1,18 +1,15 @@
+//@ts-ignore
+const { db } = require('./db.js');
+
 const createCartProduct = async ({ cartid, productid, quantity }: any) => {
   console.log('COLUMNS', cartid, productid, quantity);
   try {
-    // const {
-    //   rows: [cartItem],
-    // } = await client.query(
-    //   `
-    //         INSERT INTO cart_products (cartid, productid, quantity)
-    //         VALUES ($1, $2, $3)
-    //         ON CONFLICT (cartid, productid) DO NOTHING
-    //         RETURNING *;
-    //     `,
-    //   [cartid, productid, quantity]
-    // );
-    // return cartItem;
+    const docRef = await db.collection('cart_products').add({
+      cartid,
+      productid,
+      quantity
+    });
+    return docRef.id;
   } catch (error) {
     console.error(error);
   }
@@ -22,15 +19,12 @@ const updateCartProductQty = async ({ id, quantity }: any) => {
   console.log(id, quantity);
 
   try {
-    // const { rows: [cartItem] } = await client.query(
-    //   `
-    //     UPDATE cart_products
-    //     SET quantity = ${quantity}
-    //     WHERE id = ${id}
-    //     RETURNING *;
-    //   `
-    // )
-    // return cartItem;
+    const writeResult = await db.collection('cart_products').doc(id).update({
+      quantity
+    });
+    console.log('write result, update cart product qty: ', writeResult);
+    console.log('cart update write time: ', writeResult.writeTime);
+    return;
   } catch (error) {
     console.error(error);
   }
@@ -39,16 +33,13 @@ const updateCartProductQty = async ({ id, quantity }: any) => {
 const deleteCartProduct = async (cartProductId: string) => {
   console.log(cartProductId);
   try {
-    // const {
-    //   rows: [cartItem],
-    // } = await client.query(
-    //   `
-    //   DELETE FROM cart_products
-    //   WHERE cart_products.id = ${cartProductId}
-    //   RETURNING *;
-    // `
-    // );
-    // return cartItem;
+    const writeResult = await db
+      .collection('cart_products')
+      .doc(cartProductId)
+      .delete();
+    console.log('write result, update cart product qty: ', writeResult);
+    console.log('cart update write time: ', writeResult.writeTime);
+    return;
   } catch (error) {
     console.error(error);
   }
@@ -56,73 +47,54 @@ const deleteCartProduct = async (cartProductId: string) => {
 
 //This function is for an opened cart that has items in it.
 const getOpenCartByCustomerId = async (customerId: string) => {
-  console.log(customerId);
   try {
-    // const { rows } = await client.query(
-    //   `
-    //     SELECT cart_products.id, products.id AS "productId",
-    //       products.name, cart_products.quantity,
-    //       products.price, products.imagelink
-    //     FROM products
-    //     JOIN cart_products
-    //       ON cart_products.productid = products.id
-    //     JOIN carts
-    //       ON carts.id = cart_products.cartid
-    //     WHERE carts.isopen = true
-    //       AND carts.customerid = ${customerId}
-    //   `
-    // );
-    // console.log("CART ITEMS DB", rows)
-    // return rows;
+    const cartsSnap = await db
+      .collection('carts')
+      .where('customerid', '==', customerId)
+      .where('isopen', '==', true)
+      .get();
+    let cartId: any;
+    await cartsSnap.forEach((doc: any) => {
+      cartId = doc.id;
+    });
+    const cpSnap = await db
+      .collection('cart_products')
+      .where('cartid', '==', cartId)
+      .get();
+    const cartItems: any[] = [];
+    const setItems = async () => {
+      cpSnap.forEach((doc: any) => {
+        const { productid, quantity } = doc.data();
+        console.log('cart products: ', productid, quantity);
+        const fetchProduct = async () => {
+          const docRef = await db.collection('products').doc(productid).get();
+          cartItems.push({ id: docRef.id, quantity, ...await docRef.data() });
+        };
+        fetchProduct();
+      });
+      return cartItems;
+    };
+    console.log('create cart items func: ', await setItems());
+    return await setItems();
   } catch (error) {
-    console.error(error);
-  }
-};
-
-const getClosedCartByCustomerId = async (customerId: string) => {
-  console.log(customerId);
-  try {
-    // const { rows } = await client.query(
-    //   `
-    //     SELECT cart_products.id, products.id AS "productId",
-    //       products.name, cart_products.quantity, cart_products.cartid,
-    //       products.price, products.imagelink
-    //     FROM products
-    //     JOIN cart_products
-    //       ON cart_products.productid = products.id
-    //     JOIN carts
-    //       ON carts.id = cart_products.cartid
-    //     WHERE carts.isopen = false
-    //       AND carts.customerid = ${customerId}
-    //   `
-    // );
-    // console.log("CART ITEMS DB", rows);
-    // return rows;
-  } catch (error) {
-    console.error(error);
+    return console.error(error);
   }
 };
 
 const getPastOrdersByCustomerId = async (customerId: string) => {
-  console.log(customerId);
   try {
-    // const { rows } = await client.query(
-    //   `
-    // SELECT cart_products.id, products.id AS "productId",
-    //   products.name, cart_products.quantity,
-    //   products.price, products.imagelink,
-    //   carts.isopen, cart_products.cartid
-    // FROM products
-    // JOIN cart_products
-    //   ON cart_products.productid = products.id
-    // JOIN carts
-    //   ON carts.id = cart_products.cartid
-    // WHERE carts.customerid = ${customerId}
-    //   `
-    // );
-    // return rows;
+    const docsSnap = await db
+      .collection('carts')
+      .where('customerid', '==', customerId)
+      .where('isopen', '==', false)
+      .get();
+    const pastOrders: any[] = [];
+    docsSnap.forEach((doc: any) => {
+      pastOrders.push({ id: doc.id, ...doc.data() });
+    });
+    return pastOrders;
   } catch (error) {
-    console.error(error);
+    return console.error(error);
   }
 };
 
@@ -130,15 +102,19 @@ const getPastOrdersByCustomerId = async (customerId: string) => {
 const getOpenCartIdByCustomerId = async (customerId: string) => {
   console.log(customerId);
   try {
-    // const { rows: [cart] } = await client.query(
-    //   `
-    //     SELECT carts.id
-    //     FROM carts
-    //     WHERE carts.isopen = true
-    //     AND carts.customerid = ${customerId}
-    //   `
-    // );
-    // return cart;
+    const docsSnap = await db
+      .collection('carts')
+      .where('customerid', '==', customerId)
+      .where('isopen', '==', true)
+      .get();
+    let cart: any;
+    docsSnap.forEach((doc: any) => {
+      cart = {
+        id: doc.id,
+        ...doc.data()
+      };
+    });
+    return cart;
   } catch (error) {
     console.error(error);
   }
@@ -150,6 +126,5 @@ module.exports = {
   deleteCartProduct,
   getOpenCartByCustomerId,
   getPastOrdersByCustomerId,
-  getClosedCartByCustomerId,
   getOpenCartIdByCustomerId
 };

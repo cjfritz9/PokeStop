@@ -1,5 +1,4 @@
 "use strict";
-// const client = require("./client");
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,18 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+// const client = require("./client");
+//@ts-ignore
+const { db } = require('./db.js');
 const createCart = (customerid) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(customerid);
     try {
-        // const { rows: [cart] } = await client.query(
-        //   `
-        //         INSERT INTO carts (customerid)
-        //         VALUES ($1)
-        //         RETURNING *;
-        //     `,
-        //   [customerid]
-        // );
-        // return cart;
+        const docRef = yield db.collection('carts').add({
+            customerid,
+            isopen: true
+        });
+        if (!docRef.id)
+            return;
+        return docRef.id;
     }
     catch (error) {
         console.error(error);
@@ -30,12 +30,15 @@ const createCart = (customerid) => __awaiter(void 0, void 0, void 0, function* (
 const getCartIdbyCustomerId = (customerId) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(customerId);
     try {
-        // const { rows: [id] } = await client.query(`
-        //   SELECT id
-        //   FROM carts
-        //   WHERE carts.customerid = ${customerId}
-        // `)
-        // return id;
+        const docsSnap = yield db
+            .collection('carts')
+            .where('customerid', '==', customerId)
+            .get();
+        let cartId = '';
+        docsSnap.forEach((doc) => {
+            cartId = doc.id;
+        });
+        return cartId;
     }
     catch (error) {
         console.error(error);
@@ -43,14 +46,16 @@ const getCartIdbyCustomerId = (customerId) => __awaiter(void 0, void 0, void 0, 
     }
 });
 const closeCart = (cartId) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(cartId);
     try {
-        // const { rows: [cart] } = await client.query(`
-        //   UPDATE carts 
-        //   SET isopen = false
-        //   WHERE id = ${cartId}
-        // `)
-        // return cart;
+        const docRef = yield db.collection('carts').doc(cartId).update({
+            isopen: false
+        });
+        if (docRef.empty)
+            return;
+        return {
+            success: true,
+            id: docRef.id
+        };
     }
     catch (error) {
         console.error(error);
@@ -60,5 +65,5 @@ const closeCart = (cartId) => __awaiter(void 0, void 0, void 0, function* () {
 module.exports = {
     createCart,
     getCartIdbyCustomerId,
-    closeCart,
+    closeCart
 };

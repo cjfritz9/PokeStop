@@ -27,7 +27,7 @@ const createCustomer = async ({
 
     const docRef: any = await db.collection('customers').add({
       username,
-      hashedPassword,
+      password: hashedPassword,
       firstname,
       lastname,
       email,
@@ -55,20 +55,16 @@ const updateCustomer = async ({ id, ...fields }: any) => {
     const SALT_COUNT = 10;
     fields.password = await bcrypt.hash(fields.password, SALT_COUNT);
   }
-
   try {
-    // const {
-    //   rows: [customer]
-    // } = await client.query(
-    //   `
-    //         UPDATE customers
-    //         SET ${columns}
-    //         WHERE id = ${id}
-    //         RETURNING *;
-    //     `,
-    //   Object.values(fields)
-    // );
-    // return customer;
+    const writeResult = await db
+      .collection('customers')
+      .doc(id)
+      .update({
+        ...fields
+      });
+    console.log('update customer, result: ', writeResult);
+    console.log('update time: ', writeResult.writeTime);
+    return;
   } catch (error) {
     console.error(error);
     throw error;
@@ -78,7 +74,6 @@ const updateCustomer = async ({ id, ...fields }: any) => {
 const getCustomer = async ({ username, password }: any): Promise<any> => {
   try {
     const customer: any = await getCustomerByUsername(username);
-    console.log('get customer after register', customer);
     if (!customer) {
       return;
     }
@@ -99,17 +94,14 @@ const getCustomer = async ({ username, password }: any): Promise<any> => {
 };
 
 const getCustomerById = async (customerId: string) => {
-  console.log(customerId);
-
   try {
-    // const {
-    //   rows: [customer]
-    // } = await client.query(`
-    //         SELECT id, username
-    //         FROM customers
-    //         WHERE id = ${customerId};
-    //     `);
-    // return customer;
+    const docRef: any = await db.collection('customers').doc(customerId).get();
+    if (docRef && docRef.empty) return;
+
+    return {
+      id: docRef.id,
+      ...docRef.data()
+    };
   } catch (error) {
     console.error(error);
     throw error;
@@ -142,17 +134,20 @@ const getCustomerByUsername = async (username: string) => {
 const getCustomerByEmail = async (email: string) => {
   console.log(email);
   try {
-    // const {
-    //   rows: [customer]
-    // } = await client.query(
-    //   `
-    //         SELECT *
-    //         FROM customers
-    //         WHERE email = $1;
-    //     `,
-    //   [email]
-    // );
-    // return customer;
+    const docRef: any = await db
+      .collection('customers')
+      .where('email', '==', email)
+      .get();
+    if (docRef.empty) return;
+    let customer: any = {};
+    docRef.forEach((doc: any) => {
+      customer = {
+        id: doc.id,
+        ...doc.data()
+      };
+    });
+
+    return customer;
   } catch (error) {
     console.error(error);
     throw error;

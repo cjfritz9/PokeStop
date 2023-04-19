@@ -2,10 +2,8 @@ const express = require('express');
 const cartProductsRouter = express.Router();
 const {
   getOpenCartByCustomerId,
-  getClosedCartByCustomerId,
   getOpenCartIdByCustomerId,
   getPastOrdersByCustomerId,
-  getCartIdbyCustomerId,
   createCartProduct,
   updateCartProductQty,
   deleteCartProduct

@@ -30,7 +30,7 @@ const createCustomer = ({ username, password, firstname, lastname, email, addres
         console.log(username, firstname, lastname, email, hashedPassword, address, isadmin);
         const docRef = yield db.collection('customers').add({
             username,
-            hashedPassword,
+            password: hashedPassword,
             firstname,
             lastname,
             email,
@@ -55,18 +55,13 @@ const updateCustomer = (_a) => __awaiter(void 0, void 0, void 0, function* () {
         fields.password = yield bcrypt.hash(fields.password, SALT_COUNT);
     }
     try {
-        // const {
-        //   rows: [customer]
-        // } = await client.query(
-        //   `
-        //         UPDATE customers
-        //         SET ${columns}
-        //         WHERE id = ${id}
-        //         RETURNING *;
-        //     `,
-        //   Object.values(fields)
-        // );
-        // return customer;
+        const writeResult = yield db
+            .collection('customers')
+            .doc(id)
+            .update(Object.assign({}, fields));
+        console.log('update customer, result: ', writeResult);
+        console.log('update time: ', writeResult.writeTime);
+        return;
     }
     catch (error) {
         console.error(error);
@@ -76,7 +71,6 @@ const updateCustomer = (_a) => __awaiter(void 0, void 0, void 0, function* () {
 const getCustomer = ({ username, password }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const customer = yield getCustomerByUsername(username);
-        console.log('get customer after register', customer);
         if (!customer) {
             return;
         }
@@ -96,16 +90,11 @@ const getCustomer = ({ username, password }) => __awaiter(void 0, void 0, void 0
     }
 });
 const getCustomerById = (customerId) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(customerId);
     try {
-        // const {
-        //   rows: [customer]
-        // } = await client.query(`
-        //         SELECT id, username
-        //         FROM customers
-        //         WHERE id = ${customerId};
-        //     `);
-        // return customer;
+        const docRef = yield db.collection('customers').doc(customerId).get();
+        if (docRef && docRef.empty)
+            return;
+        return Object.assign({ id: docRef.id }, docRef.data());
     }
     catch (error) {
         console.error(error);
@@ -135,17 +124,17 @@ const getCustomerByUsername = (username) => __awaiter(void 0, void 0, void 0, fu
 const getCustomerByEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(email);
     try {
-        // const {
-        //   rows: [customer]
-        // } = await client.query(
-        //   `
-        //         SELECT *
-        //         FROM customers
-        //         WHERE email = $1;
-        //     `,
-        //   [email]
-        // );
-        // return customer;
+        const docRef = yield db
+            .collection('customers')
+            .where('email', '==', email)
+            .get();
+        if (docRef.empty)
+            return;
+        let customer = {};
+        docRef.forEach((doc) => {
+            customer = Object.assign({ id: doc.id }, doc.data());
+        });
+        return customer;
     }
     catch (error) {
         console.error(error);

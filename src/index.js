@@ -67,7 +67,7 @@ const App = () => {
         <Route path="/admin" element={<Admin token={token} />}></Route>
         <Route path="/thanks" element={<Thanks />}></Route>
         <Route
-          path="/MyCart"
+          path="/mycart"
           element={
             <MyCart
               priceTotal={priceTotal}
