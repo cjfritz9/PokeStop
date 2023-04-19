@@ -2,7 +2,6 @@ const express = require('express');
 const productsRouter = express.Router();
 
 const { getAllProducts, getProductById } = require('../dist/firestore');
-const { seedProducts } = require('../dist/firestore/products.js');
 
 //Get all the products
 productsRouter.get('/', async (req, res, next) => {
